@@ -14,7 +14,23 @@
       IMS_CONNECT_PORT: '{{IMS_CONNECT_PORT}}',
       IMS_CONNECT_SSLPORT: '{{IMS_CONNECT_SSLPORT}}',
       DFS_IMSPlex: '{{DFS_IMSPlex}}',
-      DFS_workingdir: '{{DFS_workingdir}}'
+      DFS_workingdir: '{{DFS_workingdir}}',
+      #Optional IMS configuration
+      DFS_DS_VOLUME1: '{{DFS_DS_VOLUME1}}',
+      DFS_AUTH_LIB_SYSHLQ1: '{{DFS_AUTH_LIB_SYSHLQ1}}',
+      DFS_AUTH_LIB_SYSHLQ2: '{{DFS_AUTH_LIB_SYSHLQ2}}',
+      DFS_AUTH_LIB_HLQ1: '{{DFS_AUTH_LIB_HLQ1}}',
+      DFS_AUTH_LIB_HLQ2: '{{DFS_AUTH_LIB_HLQ2}}',
+      DFS_SMS_ENVIRONMENT: '{{DFS_SMS_ENVIRONMENT}}',
+      DFS_SMS_CLASS: '{{DFS_SMS_CLASS}}',
+      STEPLIB: '{{STEPLIB}}',
+      #Optional z/OS Configuration 
+      JOB_CLASS: '{{JOB_CLASS}}',
+      MSG_CLASS: '{{MSG_CLASS}}',
+      zCloud_PROCLIB: '{{zCloud_PROCLIB}}',
+      zCloud_LERuntime: '{{zCloud_LERuntime}}',
+      zCloud_MACLIB: '{{zCloud_MACLIB}}',
+      zCloud_CSSLIB: '{{zCloud_CSSLIB}}'
     }
     # regex pattern for the following rules:
     #  - contains any of these: ';', '&' or '|'
@@ -94,4 +110,106 @@
     msg: "IMS Connct SSL port should be between 1 and 65535"
   when:
     - IMS_CONNECT_SSLPORT <= 0 or IMS_CONNECT_SSLPORT > 65535
+    - fail_task
+
+#Optional IMS configuration 
+- name: Fail if DFS_DS_VOLUME1 is longer than 6 characters
+  fail:
+    msg: "DFS_DS_VOLUME1 is longer than 6 characters"
+  when:
+    - DFS_DS_VOLUME1 | length > 6
+    - fail_task
+
+- name: Fail if DFS_AUTH_LIB_HLQ1 is longer than 8 characters
+  fail:
+    msg: DFS_AUTH_LIB_HLQ1 is longer than 8 characters
+  when:
+    - DFS_AUTH_LIB_HLQ1 | length > 8
+    - fail_task
+
+- name: Fail if DFS_AUTH_LIB_HLQ2 is longer than 8 characters
+  fail:
+    msg: DFS_AUTH_LIB_HLQ2 is longer than 8 characters
+  when:
+    - DFS_AUTH_LIB_HLQ2 | length > 8
+    - fail_task
+
+- name: Fail if DFS_AUTH_LIB_SYSHLQ1 is longer than 8 characters
+  fail:
+    msg: DFS_AUTH_LIB_SYSHLQ1 is longer than 8 characters
+  when:
+    - DFS_AUTH_LIB_SYSHLQ1 | length > 8
+    - fail_task
+
+- name: Check if DFS_AUTH_LIB_SYSHLQ2 is defined 
+  block:
+    - debug: 
+        msg: entered the defined block 
+
+    - name: Fail if DFS_AUTH_LIB_SYSHLQ2 is longer than 8 characters
+      fail:
+        msg: DFS_AUTH_LIB_SYSHLQ2 is longer than 8 characters
+      when:
+        - DFS_AUTH_LIB_SYSHLQ2 | length > 8
+        - fail_task
+  when: DFS_AUTH_LIB_SYSHLQ2 != None
+
+- debug: 
+    msg: after defined block '{{ DFS_AUTH_LIB_SYSHLQ2 }}'
+
+- name: Fail if DFS_SMS_CLASS is longer than 8 characters
+  fail:
+    msg: DFS_SMS_CLASS is longer than 8 characters
+  when:
+    - DFS_SMS_CLASS | length > 8
+    - fail_task
+  
+- name: Fail if STEPLIB is longer than 44 characters
+  fail:
+    msg: STEPLIB is longer than 44 characters
+  when:
+    - STEPLIB | length > 44
+    - fail_task
+
+#Optional z/OS configuration
+- name: Fail if JOB_CLASS is longer than 1 characters
+  fail:
+    msg: "JOB_CLASS is longer than 1 characters"
+  when:
+    - JOB_CLASS | length > 1
+    - fail_task
+
+- name: Fail if MSG_CLASS is longer than 1 characters
+  fail:
+    msg: "MSG_CLASS is longer than 1 characters"
+  when:
+    - MSG_CLASS | length > 1
+    - fail_task
+
+- name: Fail if zCloud_PROCLIB is longer than 44 characters
+  fail:
+    msg: zCloud_PROCLIB is longer than 44 characters
+  when:
+    - zCloud_PROCLIB | length > 44
+    - fail_task
+
+- name: Fail if zCloud_LERuntime is longer than 44 characters
+  fail:
+    msg: zCloud_LERuntime is longer than 44 characters
+  when:
+    - zCloud_LERuntime | length > 44
+    - fail_task
+
+- name: Fail if zCloud_MACLIB is longer than 44 characters
+  fail:
+    msg: zCloud_MACLIB is longer than 44 characters
+  when:
+    - zCloud_MACLIB | length > 44
+    - fail_task
+
+- name: Fail if zCloud_CSSLIB is longer than 44 characters
+  fail:
+    msg: zCloud_CSSLIB is longer than 44 characters
+  when:
+    - zCloud_CSSLIB | length > 44
     - fail_task
