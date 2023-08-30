@@ -17,20 +17,29 @@
     - operator_sdk.util
 
   tasks:
-    - include_role:
-        name: set_up_run_environment
+    # Do not de-provision IMS if the instance is in 'failedDup' status
+    - block:
+        - name: Failed duplicate instance found. No de-provisioning. Exiting....
+          debug: 
+              msg: ''
+        - meta: end_host
+      when: 
+        - tmdb_cr_instance.resources[0].status.run_result is defined 
+        - tmdb_cr_instance.resources[0].status.run_result == 'failedDup'
+
+    # Do not de-provision IMS if the instance is in 'failedInputValidation' status
+    - block:
+        - name: FailedValidation instance found. No de-provisioning. Exiting....
+          debug: 
+              msg: ''
+        - meta: end_host
+      when: 
+        - tmdb_cr_instance.resources[0].status.run_result is defined 
+        - tmdb_cr_instance.resources[0].status.run_result == 'failedInputValidation'
 
     - block:
-        # Do not de-provision IMS if the instance is in 'failedDup' status
-        - block:
-            - name: Failed duplicate instance found. No de-provisioning. Exiting....
-              debug: 
-                  msg: ''
-            - meta: end_host
-          when: 
-            - tmdb_cr_instance.resources[0].status.run_result is defined 
-            - tmdb_cr_instance.resources[0].status.run_result == 'failedDup'
-            # - k8s_managed
+        - include_role:
+            name: set_up_run_environment
 
         - include_role:
             name: deprovision_ims
