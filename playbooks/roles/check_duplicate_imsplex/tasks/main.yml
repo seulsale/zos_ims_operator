@@ -21,7 +21,7 @@
           - cmd_output.content[3] is defined
           - '"NOT DEFINED" not in cmd_output.content[3] | join'
 
-      # Reconcile run and not failedDup, try to reconcile
+      # Reconcile run and not failedInputCheck, try to reconcile
       - block:
           - name: IMSPLEX {{DFS_IMSPlex}} already Up. Trying to reconcile...
             debug: 
@@ -29,24 +29,24 @@
         when: 
           - reconcile_run
           - imsplex_is_up
-          - tmdb_cr_instance.resources[0].status.run_result != 'failedDup'
+          - tmdb_cr_instance.resources[0].status.run_result != 'failedInputCheck'
 
-      # Reconcile run and failedDup, fail it
+      # Reconcile run and failedInputCheck, fail it
       - block:
           - fail:
               msg: Duplicate IMSPlex {{ DFS_IMSPlex }}. Please use a different IMSPlex name. 
         when: 
           - reconcile_run
           - imsplex_is_up
-          - tmdb_cr_instance.resources[0].status.run_result == 'failedDup'
+          - tmdb_cr_instance.resources[0].status.run_result == 'failedInputCheck'
 
-      # IMSPex already up and a new 'Create' comes in, fail it with 'failedDup' status
+      # IMSPex already up and a new 'Create' comes in, fail it with 'failedInputCheck' status
       - block: 
         - name: Update CR instance run status
           include_role:
             name: update_instance_status
           vars:
-            status_val: 'failedDup'
+            status_val: 'failedInputCheck'
             status_key: 'run_result'
             instance_kind: TMDB
         - fail:

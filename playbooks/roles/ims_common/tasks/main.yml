@@ -34,7 +34,7 @@
         cmd: 'c {{ DFS_IMS_SSID }}CTL'
         verbose: true
       when: ctl == "stop" and not ims_not_up
-      #ignore_errors: true
+      ignore_errors: true
 
     - name: Issue DIS ACT command
       ims_command:
